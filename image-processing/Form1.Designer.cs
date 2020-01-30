@@ -37,14 +37,14 @@
             this.konturaCmb = new System.Windows.Forms.ComboBox();
             this.colorLbl = new System.Windows.Forms.Label();
             this.sizeLbl = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.sizeNum = new System.Windows.Forms.NumericUpDown();
             this.btnDetectObjects = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.btnColor = new System.Windows.Forms.Button();
             this.trbBrightness = new System.Windows.Forms.TrackBar();
             this.trbContrast = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sizeNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbBrightness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbContrast)).BeginInit();
             this.SuspendLayout();
@@ -94,9 +94,9 @@
             this.konturaLbl.AutoSize = true;
             this.konturaLbl.Location = new System.Drawing.Point(9, 177);
             this.konturaLbl.Name = "konturaLbl";
-            this.konturaLbl.Size = new System.Drawing.Size(44, 13);
+            this.konturaLbl.Size = new System.Drawing.Size(31, 13);
             this.konturaLbl.TabIndex = 4;
-            this.konturaLbl.Text = "Kontura";
+            this.konturaLbl.Text = "Oblik";
             // 
             // openFileDialog1
             // 
@@ -129,13 +129,18 @@
             this.sizeLbl.TabIndex = 11;
             this.sizeLbl.Text = "Velicina";
             // 
-            // numericUpDown1
+            // sizeNum
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(74, 275);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(100, 20);
-            this.numericUpDown1.TabIndex = 12;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.sizeNum.Location = new System.Drawing.Point(74, 275);
+            this.sizeNum.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.sizeNum.Name = "sizeNum";
+            this.sizeNum.Size = new System.Drawing.Size(100, 20);
+            this.sizeNum.TabIndex = 12;
+            this.sizeNum.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // btnDetectObjects
             // 
@@ -182,7 +187,7 @@
             this.Controls.Add(this.trbBrightness);
             this.Controls.Add(this.btnColor);
             this.Controls.Add(this.btnDetectObjects);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.sizeNum);
             this.Controls.Add(this.sizeLbl);
             this.Controls.Add(this.colorLbl);
             this.Controls.Add(this.konturaCmb);
@@ -195,7 +200,7 @@
             this.Text = "Detekcija oblika";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sizeNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbBrightness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbContrast)).EndInit();
             this.ResumeLayout(false);
@@ -214,7 +219,7 @@
         private System.Windows.Forms.ComboBox konturaCmb;
         private System.Windows.Forms.Label colorLbl;
         private System.Windows.Forms.Label sizeLbl;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown sizeNum;
         private System.Windows.Forms.Button btnDetectObjects;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Button btnColor;

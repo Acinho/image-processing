@@ -24,7 +24,7 @@ namespace image_processing
         int contrast;
         string shape = "Pravougaonik";
         Color color = Color.Red;
-        int size = 0;
+        int size = 1;
 
         public Form1()
         {
@@ -79,7 +79,7 @@ namespace image_processing
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            size = (int)numericUpDown1.Value;
+            size = (int)sizeNum.Value;
         }
 
         private void btnDetectObjects_Click(object sender, EventArgs e)
@@ -124,25 +124,23 @@ namespace image_processing
         {
             if (size == 0)
                 return true;
-            if (size == 1 && shapeSize <= 100.0)
+            if (size == 1 && shapeSize > 100)
                 return true;
-            if (size == 2 && shapeSize <= 200.0 && shapeSize > 100)
+            if (size == 2 && shapeSize > 200)
                 return true;
-            if (size == 3 && shapeSize <= 300.0 && shapeSize > 200)
+            if (size == 3 && shapeSize > 300)
                 return true;
-            if (size == 4 && shapeSize <= 400.0 && shapeSize > 300)
+            if (size == 4 && shapeSize > 400)
                 return true;
-            if (size == 5 && shapeSize <= 500.0 && shapeSize > 400)
+            if (size == 5 && shapeSize > 500)
                 return true;
-            if (size == 6 && shapeSize <= 600.0 && shapeSize > 500)
+            if (size == 6 && shapeSize > 600)
                 return true;
-            if (size == 7 && shapeSize <= 700.0 && shapeSize > 600)
+            if (size == 7 && shapeSize > 700)
                 return true;
-            if (size == 8 && shapeSize <= 800.0 && shapeSize > 700)
+            if (size == 8 && shapeSize > 800)
                 return true;
-            if (size == 9 && shapeSize <= 900.0 && shapeSize > 800)
-                return true;
-            if (size == 10 && shapeSize <= 1000.0 && shapeSize > 900)
+            if (size == 9 && shapeSize > 900)
                 return true;
             return false;
         }
