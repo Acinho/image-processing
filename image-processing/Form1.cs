@@ -64,7 +64,7 @@ namespace image_processing
             var tmpImage = image.Copy();
             Bitmap bitmap = tmpImage.ToBitmap();
 
-            pictureBox.Image = GetBitmapWithBrightness(bitmap);
+            pictureBox.Image = GetBitmapWithFiltersApplied(bitmap);
         }
 
         private void trbContrast_Scroll(object sender, EventArgs e)
@@ -74,7 +74,7 @@ namespace image_processing
             var tmpImage = image.Copy();
             Bitmap bitmap = tmpImage.ToBitmap();
 
-            pictureBox.Image = GetBitmapWithContrast(bitmap);
+            pictureBox.Image = GetBitmapWithFiltersApplied(bitmap);
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -123,54 +123,33 @@ namespace image_processing
                     }
                 }
             }
-            pictureBox.Image = tmpImage.ToBitmap();
+            pictureBox.Image = GetBitmapWithFiltersApplied(tmpImage.ToBitmap());
         }
-
-        private Bitmap GetBitmapWithBrightness(Bitmap bitmap)
+ 
+        private Bitmap GetBitmapWithFiltersApplied(Bitmap bitmap)
         {
-            ColorMatrix brightnessMatrix = new ColorMatrix(new float[][]
+            float[][] brightnessMatrix = new float[][]
             {
                 new float[] {brightness, 0, 0, 0, 0},
                 new float[] {0, brightness, 0, 0, 0},
                 new float[] {0, 0, brightness, 0, 0},
                 new float[] {0, 0, 0, 1, 0},
                 new float[] {0, 0, 0, 0, 1},
-            });
-
-            ImageAttributes ia = new ImageAttributes();
-            ia.SetColorMatrix(brightnessMatrix);
-
-            Point[] points =
-            {
-                new Point(0, 0),
-                new Point(bitmap.Width, 0),
-                new Point(0, bitmap.Height)
             };
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-            Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
-            using (Graphics gr = Graphics.FromImage(res))
-            {
-                gr.DrawImage(bitmap, points, rect, GraphicsUnit.Pixel, ia);
-            }
-            return res;
-        }
-
-        private Bitmap GetBitmapWithContrast(Bitmap bitmap)
-        {
+ 
             float c = contrast;
             float t = 0.5f * (1f - contrast);
-            ColorMatrix contrastMatrix = new ColorMatrix(new float[][]
+            float[][] contrastMatrix = new float[][]
             {
                 new float[] {c, 0, 0, 0, 0},
                 new float[] {0, c, 0, 0, 0},
                 new float[] {0, 0, c, 0, 0},
                 new float[] {0, 0, 0, 1, 0},
                 new float[] {t, t, t, 0, 1},
-            });
+            };
 
             ImageAttributes ia = new ImageAttributes();
-            ia.SetColorMatrix(contrastMatrix);
+            ia.SetColorMatrix(new ColorMatrix(Multiply(brightnessMatrix, contrastMatrix)));
 
             Point[] points =
             {
