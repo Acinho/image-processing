@@ -51,7 +51,9 @@
             // 
             // pictureBox
             // 
-            this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.pictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox.Location = new System.Drawing.Point(180, 12);
@@ -133,7 +135,7 @@
             // 
             this.sizeNum.Location = new System.Drawing.Point(74, 275);
             this.sizeNum.Maximum = new decimal(new int[] {
-            9,
+            1000,
             0,
             0,
             0});
@@ -165,14 +167,17 @@
             // trbBrightness
             // 
             this.trbBrightness.Location = new System.Drawing.Point(70, 47);
+            this.trbBrightness.Maximum = 255;
             this.trbBrightness.Name = "trbBrightness";
             this.trbBrightness.Size = new System.Drawing.Size(104, 45);
             this.trbBrightness.TabIndex = 17;
+            this.trbBrightness.Value = 255;
             this.trbBrightness.Scroll += new System.EventHandler(this.trbBrightness_Scroll);
             // 
             // trbContrast
             // 
             this.trbContrast.Location = new System.Drawing.Point(70, 91);
+            this.trbContrast.Maximum = 255;
             this.trbContrast.Name = "trbContrast";
             this.trbContrast.Size = new System.Drawing.Size(104, 45);
             this.trbContrast.TabIndex = 18;

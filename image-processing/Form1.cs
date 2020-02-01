@@ -1,30 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using Emgu;
-using Emgu.CV;
+﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
-using Emgu.CV.CvEnum;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
 
 namespace image_processing
 {
     public partial class Form1 : Form
     {
-        Image<Bgr, byte> image;
-
-        int brightness;
-        int contrast;
-        string shape = "Pravougaonik";
-        Color color = Color.Red;
-        int size = 1;
+        private Image<Bgr, byte> image;
+        private float brightness = 1f;
+        private int contrast;
+        private string shape = "Pravougaonik";
+        private Color color = Color.Red;
+        private int size = 0;
 
         public Form1()
         {
@@ -52,7 +44,7 @@ namespace image_processing
 
         private void konturaCmb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.shape = konturaCmb.SelectedItem.ToString();
+            shape = konturaCmb.SelectedItem.ToString();
         }
 
         private void btnColor_Click(object sender, EventArgs e)
@@ -67,12 +59,17 @@ namespace image_processing
 
         private void trbBrightness_Scroll(object sender, EventArgs e)
         {
-            Bitmap tmpBmp = new Bitmap(image.Width, image.Height);
-            //pictureBox.Image = tmpBmp;
+            brightness = trbBrightness.Value / 255.0f;
+
+            var tmpImage = image.Copy();
+            Bitmap bitmap = tmpImage.ToBitmap();
+           
+            pictureBox.Image = GetPictureWithBrightness(bitmap);
         }
 
         private void trbContrast_Scroll(object sender, EventArgs e)
         {
+            contrast = trbContrast.Value;
             Bitmap tmpBmp = new Bitmap(image.Width, image.Height);
             //pictureBox.Image = tmpBmp;
         }
@@ -86,63 +83,73 @@ namespace image_processing
         {
             var tmpImage = image.Copy();
 
-            Bgr lowerLimit = new Bgr(0, 0, 0);
-            Bgr upperLimit = new Bgr(color.B, color.G, color.R);
-            Image<Gray, byte> grayImage = tmpImage.InRange(lowerLimit, upperLimit);
-
+            Image<Gray, byte> grayImage = tmpImage.InRange(new Bgr(0, 0, 0), new Bgr(255, 255, 255));
             VectorOfVectorOfPoint shapes = new VectorOfVectorOfPoint();
             CvInvoke.FindContours(grayImage, shapes, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxSimple);
 
             for (int i = 0; i < shapes.Size; i++)
             {
                 double shapePerimiter = CvInvoke.ArcLength(shapes[i], true);
-                VectorOfPoint approx = new VectorOfPoint();
-                CvInvoke.ApproxPolyDP(shapes[i], approx, 0.03 * shapePerimiter, true);
 
-                MCvMoments moments = CvInvoke.Moments(shapes[i]);
-                int x = (int)(moments.M10 / moments.M00) - 60;
-                int y = (int)(moments.M01 / moments.M00);
+                if (shapePerimiter >= size)
+                {
+                    VectorOfPoint approx = new VectorOfPoint();
+                    CvInvoke.ApproxPolyDP(shapes[i], approx, shapePerimiter * 0.03, true);
 
-                if (shape.Equals("Pravougaonik") && ShapeFits(shapePerimiter) && approx.Size == 4)
-                {
-                    CvInvoke.PutText(tmpImage, "Pravougaonik", new Point(x, y), FontFace.HersheyTriplex, 0.6, new MCvScalar(0, 0, 0), 1);
-                }
-                else if (shape.Equals("Krug") && ShapeFits(shapePerimiter) && approx.Size > 6)
-                {
-                    CvInvoke.PutText(tmpImage, "Krug", new Point(x, y), FontFace.HersheyTriplex, 0.6, new MCvScalar(0, 0, 0), 1);
-                }
-                else if (shape.Equals("Trougao") && ShapeFits(shapePerimiter) && approx.Size == 3)
-                {
-                    CvInvoke.PutText(tmpImage, "Trougao", new Point(x, y), FontFace.HersheyTriplex, 0.6, new MCvScalar(0, 0, 0), 1);
-                }
+                    MCvMoments moments = CvInvoke.Moments(shapes[i]);
+                    Point shapeCenter = new Point((int)(moments.M10 / moments.M00), (int)(moments.M01 / moments.M00));
+                    MCvScalar textColor = new MCvScalar(0, 0, 0);
+                    MCvScalar borderColor = new MCvScalar(0, 0, 0);
 
-                pictureBox.Image = tmpImage.ToBitmap();
+                    if (shape.Equals("Pravougaonik") && approx.Size == 4)
+                    {
+                        CvInvoke.DrawContours(tmpImage, shapes, i, borderColor, 3);
+                        CvInvoke.PutText(tmpImage, "Pravougaonik", shapeCenter, FontFace.HersheyTriplex, 0.6, textColor, 2);
+                    }
+                    else if (shape.Equals("Trougao") && approx.Size == 3)
+                    {
+                        CvInvoke.DrawContours(tmpImage, shapes, i, borderColor, 3);
+                        CvInvoke.PutText(tmpImage, "Trougao", shapeCenter, FontFace.HersheyTriplex, 0.6, textColor, 2);
+
+                    }
+                    else if (shape.Equals("Krug") && approx.Size > 4)
+                    {
+                        CvInvoke.DrawContours(tmpImage, shapes, i, borderColor, 3);
+                        CvInvoke.PutText(tmpImage, "Krug", shapeCenter, FontFace.HersheyTriplex, 0.6, textColor, 2);
+                    }
+                }
             }
+            pictureBox.Image = GetPictureWithBrightness(tmpImage.ToBitmap());
         }
 
-        private bool ShapeFits(double shapeSize)
+        private Bitmap GetPictureWithBrightness(Bitmap bitmap)
         {
-            if (size == 0)
-                return true;
-            if (size == 1 && shapeSize > 100)
-                return true;
-            if (size == 2 && shapeSize > 200)
-                return true;
-            if (size == 3 && shapeSize > 300)
-                return true;
-            if (size == 4 && shapeSize > 400)
-                return true;
-            if (size == 5 && shapeSize > 500)
-                return true;
-            if (size == 6 && shapeSize > 600)
-                return true;
-            if (size == 7 && shapeSize > 700)
-                return true;
-            if (size == 8 && shapeSize > 800)
-                return true;
-            if (size == 9 && shapeSize > 900)
-                return true;
-            return false;
+            ColorMatrix cm = new ColorMatrix(new float[][]
+           {
+                new float[] {brightness, 0, 0, 0, 0},
+                new float[] {0, brightness, 0, 0, 0},
+                new float[] {0, 0, brightness, 0, 0},
+                new float[] {0, 0, 0, 1, 0},
+                new float[] {0, 0, 0, 0, 1},
+           });
+
+            ImageAttributes ia = new ImageAttributes();
+            ia.SetColorMatrix(cm);
+
+            Point[] points =
+            {
+                new Point(0, 0),
+                new Point(bitmap.Width, 0),
+                new Point(0, bitmap.Height)
+            };
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
+            using (Graphics gr = Graphics.FromImage(res))
+            {
+                gr.DrawImage(bitmap, points, rect, GraphicsUnit.Pixel, ia);
+            }
+            return res;
         }
     }
 
