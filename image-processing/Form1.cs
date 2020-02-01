@@ -128,28 +128,38 @@ namespace image_processing
  
         private Bitmap GetBitmapWithFiltersApplied(Bitmap bitmap)
         {
-            float[][] brightnessMatrix = new float[][]
-            {
-                new float[] {brightness, 0, 0, 0, 0},
-                new float[] {0, brightness, 0, 0, 0},
-                new float[] {0, 0, brightness, 0, 0},
-                new float[] {0, 0, 0, 1, 0},
-                new float[] {0, 0, 0, 0, 1},
-            };
+            float b = brightness;
+            //float[][] brightnessMatrix = new float[][]
+            //{
+            //    new float[] {b, 0, 0, 0, 0},
+            //    new float[] {0, b, 0, 0, 0},
+            //    new float[] {0, 0, b, 0, 0},
+            //    new float[] {0, 0, 0, 1, 0},
+            //    new float[] {0, 0, 0, 0, 1},
+            //};
  
             float c = contrast;
             float t = 0.5f * (1f - contrast);
-            float[][] contrastMatrix = new float[][]
+            //float[][] contrastMatrix = new float[][]
+            //{
+            //    new float[] {c, 0, 0, 0, 0},
+            //    new float[] {0, c, 0, 0, 0},
+            //    new float[] {0, 0, c, 0, 0},
+            //    new float[] {0, 0, 0, 1, 0},
+            //    new float[] {t, t, t, 0, 1},
+            //};
+
+            float[][] combinedBrightnessContrastMatrix = new float[][]
             {
-                new float[] {c, 0, 0, 0, 0},
-                new float[] {0, c, 0, 0, 0},
-                new float[] {0, 0, c, 0, 0},
+                new float[] {b * c, 0, 0, 0, 0},
+                new float[] {0, b * c, 0, 0, 0},
+                new float[] {0, 0, b * c, 0, 0},
                 new float[] {0, 0, 0, 1, 0},
                 new float[] {t, t, t, 0, 1},
             };
 
             ImageAttributes ia = new ImageAttributes();
-            ia.SetColorMatrix(new ColorMatrix(Multiply(brightnessMatrix, contrastMatrix)));
+            ia.SetColorMatrix(new ColorMatrix(combinedBrightnessContrastMatrix));
 
             Point[] points =
             {
@@ -165,36 +175,6 @@ namespace image_processing
                 gr.DrawImage(bitmap, points, rect, GraphicsUnit.Pixel, ia);
             }
             return res;
-        }
-
-        private float[][] Multiply(float[][] f1, float[][] f2)
-        {
-            float[][] X = new float[5][];
-            for (int d = 0; d < 5; d++)
-            {
-                X[d] = new float[5];
-            }
-
-            int size = 5;
-            float[] column = new float[5];
-            for (int j = 0; j < 5; j++)
-            {
-                for (int k = 0; k < 5; k++)
-                {
-                    column[k] = f1[k][j];
-                }
-                for (int i = 0; i < 5; i++)
-                {
-                    float[] row = f2[i];
-                    float s = 0;
-                    for (int k = 0; k < size; k++)
-                    {
-                        s += row[k] * column[k];
-                    }
-                    X[i][j] = s;
-                }
-            }
-            return X;
         }
     }
 
