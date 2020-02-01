@@ -13,7 +13,7 @@ namespace image_processing
     {
         private Image<Bgr, byte> image;
         private float brightness = 1f;
-        private int contrast;
+        private float contrast = 1f;
         private string shape = "Pravougaonik";
         private Color color = Color.Red;
         private int size = 0;
@@ -63,15 +63,18 @@ namespace image_processing
 
             var tmpImage = image.Copy();
             Bitmap bitmap = tmpImage.ToBitmap();
-           
-            pictureBox.Image = GetPictureWithBrightness(bitmap);
+
+            pictureBox.Image = GetBitmapWithBrightness(bitmap);
         }
 
         private void trbContrast_Scroll(object sender, EventArgs e)
         {
-            contrast = trbContrast.Value;
-            Bitmap tmpBmp = new Bitmap(image.Width, image.Height);
-            //pictureBox.Image = tmpBmp;
+            contrast = trbContrast.Value / 128.0f;
+
+            var tmpImage = image.Copy();
+            Bitmap bitmap = tmpImage.ToBitmap();
+
+            pictureBox.Image = GetBitmapWithContrast(bitmap);
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -83,7 +86,8 @@ namespace image_processing
         {
             var tmpImage = image.Copy();
 
-            Image<Gray, byte> grayImage = tmpImage.InRange(new Bgr(0, 0, 0), new Bgr(255, 255, 255));
+            Image<Gray, byte> grayImage = tmpImage.InRange(new Bgr(color), new Bgr(color));
+
             VectorOfVectorOfPoint shapes = new VectorOfVectorOfPoint();
             CvInvoke.FindContours(grayImage, shapes, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxSimple);
 
@@ -119,22 +123,22 @@ namespace image_processing
                     }
                 }
             }
-            pictureBox.Image = GetPictureWithBrightness(tmpImage.ToBitmap());
+            pictureBox.Image = tmpImage.ToBitmap();
         }
 
-        private Bitmap GetPictureWithBrightness(Bitmap bitmap)
+        private Bitmap GetBitmapWithBrightness(Bitmap bitmap)
         {
-            ColorMatrix cm = new ColorMatrix(new float[][]
-           {
+            ColorMatrix brightnessMatrix = new ColorMatrix(new float[][]
+            {
                 new float[] {brightness, 0, 0, 0, 0},
                 new float[] {0, brightness, 0, 0, 0},
                 new float[] {0, 0, brightness, 0, 0},
                 new float[] {0, 0, 0, 1, 0},
                 new float[] {0, 0, 0, 0, 1},
-           });
+            });
 
             ImageAttributes ia = new ImageAttributes();
-            ia.SetColorMatrix(cm);
+            ia.SetColorMatrix(brightnessMatrix);
 
             Point[] points =
             {
@@ -150,6 +154,68 @@ namespace image_processing
                 gr.DrawImage(bitmap, points, rect, GraphicsUnit.Pixel, ia);
             }
             return res;
+        }
+
+        private Bitmap GetBitmapWithContrast(Bitmap bitmap)
+        {
+            float c = contrast;
+            float t = 0.5f * (1f - contrast);
+            ColorMatrix contrastMatrix = new ColorMatrix(new float[][]
+            {
+                new float[] {c, 0, 0, 0, 0},
+                new float[] {0, c, 0, 0, 0},
+                new float[] {0, 0, c, 0, 0},
+                new float[] {0, 0, 0, 1, 0},
+                new float[] {t, t, t, 0, 1},
+            });
+
+            ImageAttributes ia = new ImageAttributes();
+            ia.SetColorMatrix(contrastMatrix);
+
+            Point[] points =
+            {
+                new Point(0, 0),
+                new Point(bitmap.Width, 0),
+                new Point(0, bitmap.Height)
+            };
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            Bitmap res = new Bitmap(bitmap.Width, bitmap.Height);
+            using (Graphics gr = Graphics.FromImage(res))
+            {
+                gr.DrawImage(bitmap, points, rect, GraphicsUnit.Pixel, ia);
+            }
+            return res;
+        }
+
+        private float[][] Multiply(float[][] f1, float[][] f2)
+        {
+            float[][] X = new float[5][];
+            for (int d = 0; d < 5; d++)
+            {
+                X[d] = new float[5];
+            }
+
+            int size = 5;
+            float[] column = new float[5];
+            for (int j = 0; j < 5; j++)
+            {
+                for (int k = 0; k < 5; k++)
+                {
+                    column[k] = f1[k][j];
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    float[] row = f2[i];
+                    float s = 0;
+                    for (int k = 0; k < size; k++)
+                    {
+                        s += row[k] * column[k];
+                    }
+                    X[i][j] = s;
+                }
+            }
+            return X;
         }
     }
 

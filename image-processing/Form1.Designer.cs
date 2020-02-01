@@ -181,6 +181,7 @@
             this.trbContrast.Name = "trbContrast";
             this.trbContrast.Size = new System.Drawing.Size(104, 45);
             this.trbContrast.TabIndex = 18;
+            this.trbContrast.Value = 128;
             this.trbContrast.Scroll += new System.EventHandler(this.trbContrast_Scroll);
             // 
             // Form1
