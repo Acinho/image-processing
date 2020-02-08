@@ -29,7 +29,7 @@ namespace image_processing
         private void Form1_Load(object sender, EventArgs e)
         {
             image = new Image<Bgr, byte>(Properties.Resources.slika);
-            pictureBox.Image = image.ToBitmap();
+            pictureBox.Image = image.Bitmap;
         }
 
         private void choosePictureBtn_Click(object sender, EventArgs e)
@@ -38,7 +38,7 @@ namespace image_processing
             if (dr == DialogResult.OK)
             {
                 image = new Image<Bgr, byte>(openFileDialog1.FileName);
-                pictureBox.Image = image.ToBitmap();
+                pictureBox.Image = image.Bitmap;
             }
         }
 
@@ -62,7 +62,7 @@ namespace image_processing
             brightness = trbBrightness.Value / 255.0f;
 
             var tmpImage = image.Copy();
-            Bitmap bitmap = tmpImage.ToBitmap();
+            Bitmap bitmap = tmpImage.Bitmap;
 
             pictureBox.Image = GetBitmapWithFiltersApplied(bitmap);
         }
@@ -72,7 +72,7 @@ namespace image_processing
             contrast = trbContrast.Value / 128.0f;
 
             var tmpImage = image.Copy();
-            Bitmap bitmap = tmpImage.ToBitmap();
+            Bitmap bitmap = tmpImage.Bitmap;
 
             pictureBox.Image = GetBitmapWithFiltersApplied(bitmap);
         }
@@ -123,7 +123,7 @@ namespace image_processing
                     }
                 }
             }
-            pictureBox.Image = GetBitmapWithFiltersApplied(tmpImage.ToBitmap());
+            pictureBox.Image = GetBitmapWithFiltersApplied(tmpImage.Bitmap);
         }
  
         private Bitmap GetBitmapWithFiltersApplied(Bitmap bitmap)
