@@ -171,7 +171,7 @@
             this.trbBrightness.Name = "trbBrightness";
             this.trbBrightness.Size = new System.Drawing.Size(104, 45);
             this.trbBrightness.TabIndex = 17;
-            this.trbBrightness.Value = 255;
+            this.trbBrightness.Value = 128;
             this.trbBrightness.Scroll += new System.EventHandler(this.trbBrightness_Scroll);
             // 
             // trbContrast

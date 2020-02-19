@@ -12,7 +12,7 @@ namespace image_processing
     public partial class Form1 : Form
     {
         private Image<Bgr, byte> image;
-        private float brightness = 1f;
+        private float brightness = 0f;
         private float contrast = 1f;
         private string shape = "Pravougaonik";
         private Color color = Color.Red;
@@ -59,7 +59,7 @@ namespace image_processing
 
         private void trbBrightness_Scroll(object sender, EventArgs e)
         {
-            brightness = trbBrightness.Value / 255.0f;
+            brightness = trbBrightness.Value / 255.0f * 2 - 1;
 
             var tmpImage = image.Copy();
             Bitmap bitmap = tmpImage.Bitmap;
@@ -131,11 +131,11 @@ namespace image_processing
             float b = brightness;
             //float[][] brightnessMatrix = new float[][]
             //{
-            //    new float[] {b, 0, 0, 0, 0},
-            //    new float[] {0, b, 0, 0, 0},
-            //    new float[] {0, 0, b, 0, 0},
+            //    new float[] {1, 0, 0, 0, 0},
+            //    new float[] {0, 1, 0, 0, 0},
+            //    new float[] {0, 0, 1, 0, 0},
             //    new float[] {0, 0, 0, 1, 0},
-            //    new float[] {0, 0, 0, 0, 1},
+            //    new float[] {b, b, b, 0, 1},
             //};
  
             float c = contrast;
@@ -151,11 +151,11 @@ namespace image_processing
 
             float[][] combinedBrightnessContrastMatrix = new float[][]
             {
-                new float[] {b * c, 0, 0, 0, 0},
-                new float[] {0, b * c, 0, 0, 0},
-                new float[] {0, 0, b * c, 0, 0},
+                new float[] {c, 0, 0, 0, 0},
+                new float[] {0, c, 0, 0, 0},
+                new float[] {0, 0, c, 0, 0},
                 new float[] {0, 0, 0, 1, 0},
-                new float[] {t, t, t, 0, 1},
+                new float[] {b * c + t, b * c + t, b * c + t, 0, 1},
             };
 
             ImageAttributes ia = new ImageAttributes();
